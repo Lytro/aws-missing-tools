@@ -165,9 +165,10 @@ module AwsMissingTools
     end
 
     def instances_inservice?(load_balancer)
-      return false if load_balancer.instances.count != @group.desired_capacity
+      health = load_balancer.instances.health
+      return false if health.count != @group.desired_capacity
 
-      load_balancer.instances.health.each do |instance_health|
+      health.each do |instance_health|
         unless instance_health[:state] == 'InService'
           puts "\nInstance #{instance_health[:instance].id} is currently #{instance_health[:state]} on load balancer #{load_balancer.name}."
 
